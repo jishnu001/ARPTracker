@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"runtime"
 	"time"
 
@@ -30,19 +31,16 @@ func main() {
 			fmt.Println(ip, mac)
 		}*/
 
-		for _, val := range arpCache {
-			found := false
-			for _, val1 := range arpCacheTemp {
-				if val == val1 {
-					found = true
-					//fmt.Println("second map")
-					//fmt.Println("key:", key1, "val:", val1)
-					break
+		for key, val := range arpCache {
+
+			valTemp, found := arpCacheTemp[key]
+			if found {
+				if val != valTemp {
+					fmt.Println(key, "/", val, " became -->", key, "/", valTemp)
 				}
 			}
-			if !found {
-				arpCache = arpCacheTemp
-			}
+			arpCache = arpCacheTemp
+
 		}
 		time.Sleep(time.Second * 10)
 	}
