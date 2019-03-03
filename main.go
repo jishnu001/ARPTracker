@@ -32,16 +32,24 @@ func main() {
 		}*/
 
 		for key, val := range arpCache {
-
 			valTemp, found := arpCacheTemp[key]
 			if found {
 				if val != valTemp {
 					fmt.Println(key, "/", val, " became -->", key, "/", valTemp)
 				}
 			}
-			arpCache = arpCacheTemp
 
 		}
+
+		for key, val := range arpCacheTemp {
+			_, found := arpCache[key]
+			if !found {
+				fmt.Println("New IP/MAC in ARP cache: ", key, "/", val)
+			}
+
+		}
+
+		arpCache = arpCacheTemp
 		time.Sleep(time.Second * 10)
 	}
 
