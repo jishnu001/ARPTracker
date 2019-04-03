@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os/exec"
 	"runtime"
 	"time"
 
@@ -17,6 +18,23 @@ func getARPTable(arpCache map[string]string) {
 	}
 }
 
+func notifyUser(message string) {
+
+	title := "ARPTracker"
+
+	if runtime.GOOS == "linux" {
+
+		exec.Command("notify-send", "-i", "", title, message).Run()
+
+	} else if runtime.GOOS == "darwin" {
+		
+		exec.Command("osascript", "-e", "display notification \""
+						+message+"\" with title \""+title+"\"").Run()
+
+	}
+
+}
+
 func main() {
 
 	arpCache := make(map[string]string)
@@ -27,15 +45,11 @@ func main() {
 		arpCacheTemp := make(map[string]string)
 		getARPTable(arpCacheTemp)
 
-		/*for ip, mac := range arpCache {
-			fmt.Println(ip, mac)
-		}*/
-
 		for key, val := range arpCache {
 			valTemp, found := arpCacheTemp[key]
 			if found {
 				if val != valTemp {
-					fmt.Println(key, "/", val, " became -->", key, "/", valTemp)
+					notifyUser(key +  "/"  + val +  " became -->" +  key +  "/" +  valTemp)
 				}
 			}
 
@@ -44,7 +58,7 @@ func main() {
 		for key, val := range arpCacheTemp {
 			_, found := arpCache[key]
 			if !found {
-				fmt.Println("New IP/MAC in ARP cache: ", key, "/", val)
+				notifyUser("New IP/MAC in ARP cache: " + key + "/" + val)
 			}
 
 		}
